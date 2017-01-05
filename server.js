@@ -1,19 +1,47 @@
-var express = require( "express" );
-var app     = express();
-
-// This is only serving static pages
-// This is the worlds most simplistic security protocol
-//      if the requestor does not know to supply the "abc" "token" then they will not get access to the page.
-
-// No routing per se, this is using a virtual path for security
-
-// @todo: make sure that the server does not respond to bad requests so that it fails silently to robohackers
-// @todo: add a time in if there is a bad request so that the server cannot be made to respond quickly to a brute force attack
+var express = require('express');
+var app = express();
+var path = require( "path" );
 
 
-// use "/abc/<filename>" as a virtual path to "/<filename>"
-app.use( "/abc", express.static("./"));
+// home page
+app.get('/', function (req, res) {
+  res.sendFile( path.join( __dirname + "/index.html" ))
+})
 
-app.listen( 80, console.log( "[ Express Server ] Listening on port 80" ));
+// link to script.js
+app.get('/script.js', function (req, res) {
+  res.sendFile( path.join( __dirname + "/script.js" ))
+})
+
+// link to style.css
+app.get('/style.css', function (req, res) {
+  res.sendFile( path.join( __dirname + "/style.css" ))
+})
+
+// invoke the route and respond with an anonymous function
+app.get( "/aboutAnon", function( req, res) {
+    res.send( "about info from anon function" );
+    console.log( "aboutAnon route invoked" );
+})
+
+// invoke the route and call a first class function from the anonymous function
+app.get( "/aboutFunc", function( req, res) {
+    aboutInfo( req, res );
+    console.log( "aboutFunc route invoked" );
+})
+
+// invoke the route and call a first class function directly
+app.get( "/aboutFunc2", aboutInfo );
 
 
+// start the server
+app.listen(80, function () {
+  console.log('Example app listening on port 80!')
+})
+
+
+// endpoint functions
+function aboutInfo( req, res ){
+    res.send( "about info from the server via aboutInfo() function enpoint" );
+    console.log( "aboutInfo() called" );
+} // end aboutInfo 
